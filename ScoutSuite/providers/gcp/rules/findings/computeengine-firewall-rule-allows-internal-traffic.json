@@ -26,7 +26,8 @@
             "containAtLeastOneOf",
             "10.128.0.0/9"
         ],
-        ["or",
+        [
+            "or",
             [
                 "computeengine.projects.id.firewalls.id.allowed_traffic.id.",
                 "equal",

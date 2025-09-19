@@ -1,0 +1,20 @@
+{
+    "description": "Project Outside Service Perimeter",
+    "rationale": "Access Context Manager service perimeters add network-level controls around Google APIs. Projects left outside any perimeter rely only on IAM, which allows authenticated principals to connect from unmanaged networks or devices and makes it easier to exfiltrate data into projects outside your organization.",
+    "remediation": "Create or update an Access Context Manager service perimeter that includes the project, then configure ingress and egress policies so only trusted environments can reach the project's Google APIs.",
+    "references": [
+        "https://cloud.google.com/vpc-service-controls/docs/service-perimeters",
+        "https://cloud.google.com/vpc-service-controls/docs/using-service-perimeters"
+    ],
+    "dashboard_name": "Service Perimeters",
+    "path": "accesscontextmanager.projects.id",
+    "conditions": [
+        "and",
+        [
+            "accesscontextmanager.projects.id.service_perimeters",
+            "empty",
+            ""
+        ]
+    ],
+    "id_suffix": "no_service_perimeter"
+}

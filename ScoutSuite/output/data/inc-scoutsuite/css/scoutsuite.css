@@ -89,6 +89,7 @@ body {
 
 .finding-good { color: #23af44; }
 .finding-warning { color: #fdbe00; }
+.finding-info { color: #1f7bb6; }
 .finding-danger { color:#ee293d; 
                   font-weight: bold;}
 

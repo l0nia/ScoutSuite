@@ -168,6 +168,7 @@ class AccessContextManager(Resources):
             'description': perimeter.get('description'),
             'create_time': perimeter.get('createTime'),
             'update_time': perimeter.get('updateTime'),
+            'perimeter_type': perimeter.get('perimeterType'),
             'status': status,
             'spec': perimeter.get('spec', {}),
             'project_numbers': project_numbers,

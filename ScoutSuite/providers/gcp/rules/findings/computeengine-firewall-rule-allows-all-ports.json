@@ -21,7 +21,8 @@
             "equal",
             "INGRESS"
         ],
-        ["or",
+        [
+            "or",
             [
                 "computeengine.projects.id.firewalls.id.allowed_traffic.id.",
                 "equal",

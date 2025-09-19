@@ -1131,6 +1131,7 @@ function updateDOM(anchor) {
     // Clear findings highlighting
     $('span').removeClass('finding-danger')
     $('span').removeClass('finding-warning')
+    $('span').removeClass('finding-info')
 
     // DOM Update
     if (path === '') {

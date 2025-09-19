@@ -1,9 +1,9 @@
 {
-    "description": "Service Perimeter without Restricted Services",
-    "rationale": "Access Context Manager service perimeters protect projects by restricting access to Google APIs. A perimeter that does not restrict any services leaves projects unprotected from data exfiltration risks.",
+    "description": "Service Perimeter Rollout in Progress",
+    "rationale": "A perimeter with no active restricted services but with a pending spec of restricted services indicates an update is being rolled out. Until rollout completes, the project is governed only by IAM controls, so access should be monitored.",
     "references": [
         "https://cloud.google.com/vpc-service-controls/docs/service-perimeters",
-        ""
+        "https://cloud.google.com/vpc-service-controls/docs/using-service-perimeters"
     ],
     "dashboard_name": "Service Perimeters",
     "path": "accesscontextmanager.policies.id.service_perimeters.id",
@@ -12,6 +12,11 @@
         [
             "accesscontextmanager.policies.id.service_perimeters.id.status.restrictedServices",
             "empty",
+            ""
+        ],
+        [
+            "accesscontextmanager.policies.id.service_perimeters.id.spec.restrictedServices",
+            "notEmpty",
             ""
         ],
         [
@@ -26,20 +31,7 @@
                 "empty",
                 ""
             ]
-        ],
-        [
-            "or",
-            [
-                "accesscontextmanager.policies.id.service_perimeters.id.spec.restrictedServices",
-                "empty",
-                ""
-            ],
-            [
-                "accesscontextmanager.policies.id.service_perimeters.id.spec",
-                "empty",
-                ""
-            ]
         ]
     ],
-    "id_suffix": "restricted_services_empty"
+    "id_suffix": "restricted_services_rollout"
 }

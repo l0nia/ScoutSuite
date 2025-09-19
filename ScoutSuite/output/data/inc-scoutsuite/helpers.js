@@ -404,6 +404,8 @@ Handlebars.registerHelper('each_dict_as_sorted_list', function (context, options
                 if (context[b].level.toLowerCase() === 'warning') return 1
                 if (context[a].level.toLowerCase() === 'warning') return -1
                 if (context[b].level.toLowerCase() === 'warning') return 1
+                if (context[a].level.toLowerCase() === 'info') return -1
+                if (context[b].level.toLowerCase() === 'info') return 1
             }
         }
         return 0
