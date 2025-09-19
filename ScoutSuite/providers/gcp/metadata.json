@@ -35,6 +35,30 @@
           "path": "services.kms.projects.id.keyrings"
         }
       }
+    },
+    "accesscontextmanager": {
+      "resources": {
+        "policies": {
+          "cols": 2,
+          "path": "services.accesscontextmanager.policies"
+        },
+        "service_perimeters": {
+          "cols": 2,
+          "path": "services.accesscontextmanager.policies.id.service_perimeters"
+        },
+        "access_levels": {
+          "cols": 2,
+          "path": "services.accesscontextmanager.policies.id.access_levels"
+        },
+        "projects": {
+          "cols": 2,
+          "path": "services.accesscontextmanager.projects"
+        },
+        "gcp_user_access_bindings": {
+          "cols": 2,
+          "path": "services.accesscontextmanager.organizations.id.gcp_user_access_bindings"
+        }
+      }
     }
   },
   "compute": {
@@ -171,4 +195,3 @@
     }
   }
 }
-

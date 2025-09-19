@@ -16,6 +16,7 @@ from ScoutSuite.providers.gcp.facade.stackdrivermonitoring import StackdriverMon
 from ScoutSuite.providers.gcp.facade.gke import GKEFacade
 from ScoutSuite.providers.gcp.facade.functions import FunctionsFacade
 from ScoutSuite.providers.gcp.facade.bigquery import BigQueryFacade
+from ScoutSuite.providers.gcp.facade.accesscontextmanager import AccessContextManagerFacade
 from ScoutSuite.providers.gcp.facade.utils import GCPFacadeUtils
 from ScoutSuite.utils import format_service_name
 
@@ -43,6 +44,7 @@ class GCPFacade(GCPBaseFacade):
         self.dns = DNSFacade()
         self.stackdriverlogging = StackdriverLoggingFacade()
         self.stackdrivermonitoring = StackdriverMonitoringFacade()
+        self.accesscontextmanager = AccessContextManagerFacade()
 
         # lock to minimize concurrent calls to get_services()
         self.projects_services_lock = False
@@ -228,6 +230,8 @@ class GCPFacade(GCPBaseFacade):
             endpoint = 'redis'
         elif service == 'DNS':
             endpoint = 'dns'
+        elif service == 'AccessContextManager':
+            endpoint = 'accesscontextmanager'
         else:
             print_warning(f"Could not validate the state of the {format_service_name(service.lower())} API "
                           f"for project \"{project_id}\" (unknown endpoint), including it in the execution")

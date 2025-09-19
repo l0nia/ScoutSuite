@@ -1,0 +1,19 @@
+{
+    "description": "Service Perimeter Without Restricted Services",
+    "rationale": "Access Context Manager service perimeters protect projects by restricting access to Google APIs. A perimeter that does not restrict any services leaves projects unprotected from data exfiltration risks.",
+    "references": [
+        "https://cloud.google.com/vpc-service-controls/docs/service-perimeters",
+        ""
+    ],
+    "dashboard_name": "Service Perimeters",
+    "path": "accesscontextmanager.policies.id.service_perimeters.id",
+    "conditions": [
+        "and",
+        [
+            "accesscontextmanager.policies.id.service_perimeters.id.status.restrictedServices",
+            "empty",
+            ""
+        ]
+    ],
+    "id_suffix": "restricted_services_empty"
+}
