@@ -32,6 +32,16 @@ The following cloud providers are currently supported:
 - Kubernetes clusters on a cloud provider (alpha)
 - DigitalOcean Cloud (alpha)
 
+
+## Modules
+
+This version of ScoutSuite contains a module to run checks on GCP service perimeters and access levels.
+
+```
+python scout.py gcp --services accesscontextmanager
+```
+
+
 ## Installation
 
 Refer to the [wiki](https://github.com/nccgroup/ScoutSuite/wiki/Setup).
