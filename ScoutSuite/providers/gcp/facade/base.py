@@ -18,6 +18,7 @@ from ScoutSuite.providers.gcp.facade.functions import FunctionsFacade
 from ScoutSuite.providers.gcp.facade.bigquery import BigQueryFacade
 from ScoutSuite.providers.gcp.facade.accesscontextmanager import AccessContextManagerFacade
 from ScoutSuite.providers.gcp.facade.utils import GCPFacadeUtils
+from ScoutSuite.providers.utils import run_concurrently
 from ScoutSuite.utils import format_service_name
 
 
@@ -153,6 +154,18 @@ class GCPFacade(GCPBaseFacade):
 
         finally:
             return projects
+
+    async def get_project_ancestry(self, project_id):
+        client = self._get_client()
+        projects_group = client.projects()
+        try:
+            response = await run_concurrently(
+                lambda: projects_group.getAncestry(projectId=project_id, body={}).execute()
+            )
+            return response.get('ancestor', []) or []
+        except Exception as e:
+            print_debug(f'Failed to retrieve ancestry for project "{project_id}": {e}')
+            return []
 
     async def get_enabled_services(self, project_id, attempt=1, has_lock=False):
         timeout = 60*attempt

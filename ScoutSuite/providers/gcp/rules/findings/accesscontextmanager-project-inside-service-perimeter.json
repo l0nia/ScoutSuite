@@ -1,0 +1,18 @@
+{
+    "description": "Project Inside Service Perimeter",
+    "rationale": "Projects covered by an Access Context Manager service perimeter benefit from VPC Service Controls. Tracking scoped projects helps confirm sensitive workloads remain protected.",
+    "references": [
+        "https://cloud.google.com/vpc-service-controls/docs/service-perimeters"
+    ],
+    "dashboard_name": "Service Perimeters",
+    "path": "accesscontextmanager.projects.id",
+    "conditions": [
+        "and",
+        [
+            "accesscontextmanager.projects.id.service_perimeters",
+            "notEmpty",
+            ""
+        ]
+    ],
+    "id_suffix": "inside_service_perimeter"
+}

@@ -1,4 +1,4 @@
-from ScoutSuite.core.console import print_exception, print_warning
+from ScoutSuite.core.console import print_exception, print_warning, print_info
 from ScoutSuite.providers.base.resources.base import Resources
 from ScoutSuite.providers.gcp.facade.base import GCPFacade
 from ScoutSuite.providers.utils import get_non_provider_id
@@ -28,6 +28,33 @@ class AccessContextManager(Resources):
             project_id = project.get('projectId')
             if not project_id:
                 continue
+            project_number = project.get('projectNumber')
+            if project_number is not None:
+                project_number = str(project_number)
+                project_number_to_id[project_number] = project_id
+            project_id_to_number[project_id] = project_number
+            parent = project.get('parent', {})
+            if parent.get('type') == 'organization' and parent.get('id'):
+                org_id = str(parent['id'])
+                if org_id not in org_ids:
+                    print_info(f'Access Context Manager: discovered organization {org_id} from project {project_id}')
+                org_ids.add(org_id)
+            else:
+                ancestry = await self.facade.get_project_ancestry(project_id)
+                for ancestor in ancestry:
+                    resource = ancestor.get('resourceId', {}) or {}
+                    if resource.get('type') == 'organization' and resource.get('id'):
+                        org_id = str(resource['id'])
+                        if org_id not in org_ids:
+                            print_info(f'Access Context Manager: discovered organization {org_id} via ancestry of project {project_id}')
+                        org_ids.add(org_id)
+                        break
+            self['projects'][project_id] = {
+                'project_number': project_number,
+                'service_perimeters': {},
+                'access_levels': {},
+                'policies': {}
+            }
             try:
                 enabled = await self.facade.is_api_enabled(project_id, self.__class__.__name__)
             except Exception as e:
@@ -36,20 +63,7 @@ class AccessContextManager(Resources):
                 continue
             if not enabled:
                 continue
-            project_number = project.get('projectNumber')
-            if project_number is not None:
-                project_number = str(project_number)
-                project_number_to_id[project_number] = project_id
-            project_id_to_number[project_id] = project_number
-            parent = project.get('parent', {})
-            if parent.get('type') == 'organization' and parent.get('id'):
-                org_ids.add(str(parent['id']))
-            self['projects'][project_id] = {
-                'project_number': project_number,
-                'service_perimeters': {},
-                'access_levels': {},
-                'policies': {}
-            }
+            self['projects'][project_id]['api_enabled'] = True
 
         if not org_ids:
             print_warning('Access Context Manager: no organization identifier available; skipping resource collection.')
@@ -141,6 +155,47 @@ class AccessContextManager(Resources):
         }
         return policy_id, policy_dict
 
+    @staticmethod
+    def _extract_ingress_details(perimeter_section: dict):
+        has_policies = False
+        access_levels = []
+
+        if not isinstance(perimeter_section, dict):
+            return has_policies, access_levels
+
+        candidate_sections = [perimeter_section]
+        nested_config = perimeter_section.get('servicePerimeterConfig')
+        if isinstance(nested_config, dict):
+            candidate_sections.append(nested_config)
+
+        for section in candidate_sections:
+            policies = section.get('ingressPolicies', []) or []
+            if policies:
+                has_policies = True
+            for policy in policies:
+                ingress_from = policy.get('ingressFrom', {}) or {}
+                if not isinstance(ingress_from, dict):
+                    continue
+
+                for key in ('accessLevels', 'access_levels'):
+                    for level in ingress_from.get(key, []) or []:
+                        if level and level not in access_levels:
+                            access_levels.append(level)
+
+                sources = ingress_from.get('sources')
+                if sources is None:
+                    sources = ingress_from.get('ingressSources')
+                for source in sources or []:
+                    if isinstance(source, dict):
+                        level = source.get('accessLevel') or source.get('access_level')
+                        if level and level not in access_levels:
+                            access_levels.append(level)
+                    elif isinstance(source, str) and '/accessLevels/' in source:
+                        if source not in access_levels:
+                            access_levels.append(source)
+
+        return has_policies, access_levels
+
     def _parse_service_perimeter(self, perimeter: dict, project_number_to_id: dict):
         name = perimeter.get('name', '')
         perimeter_id = get_non_provider_id(name) if name else get_non_provider_id(perimeter.get('title', 'perimeter'))
@@ -161,6 +216,9 @@ class AccessContextManager(Resources):
         access_level_names = status.get('accessLevels', []) or []
         access_level_ids = [get_non_provider_id(level) for level in access_level_names]
 
+        status_has_ingress_policies, status_ingress_access_levels = self._extract_ingress_details(status)
+        spec_has_ingress_policies, spec_ingress_access_levels = self._extract_ingress_details(perimeter.get('spec', {}))
+
         perimeter_dict = {
             'id': perimeter_id,
             'name': name,
@@ -175,7 +233,13 @@ class AccessContextManager(Resources):
             'project_ids': mapped_projects,
             'unresolved_project_numbers': unresolved_numbers,
             'access_level_names': access_level_names,
-            'access_level_ids': access_level_ids
+            'access_level_ids': access_level_ids,
+            'status_has_ingress_policies': status_has_ingress_policies,
+            'status_ingress_access_levels': status_ingress_access_levels,
+            'status_ingress_access_levels_count': len(status_ingress_access_levels),
+            'spec_has_ingress_policies': spec_has_ingress_policies,
+            'spec_ingress_access_levels': spec_ingress_access_levels,
+            'spec_ingress_access_levels_count': len(spec_ingress_access_levels)
         }
         return perimeter_id, perimeter_dict
 

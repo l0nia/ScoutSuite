@@ -13,6 +13,24 @@
                 "level": "info"
             }
         ],
+        "accesscontextmanager-project-inside-service-perimeter.json": [
+            {
+                "enabled": true,
+                "level": "info"
+            }
+        ],
+        "accesscontextmanager-service-perimeter-no-ingress-access-levels.json": [
+            {
+                "enabled": true,
+                "level": "warning"
+            }
+        ],
+        /*"accesscontextmanager-service-perimeter-with-restricted-services.json": [
+            {
+                "enabled": true,
+                "level": "info"
+            }
+        ],*/
         "accesscontextmanager-service-perimeter-no-restricted-services.json": [
             {
                 "enabled": true,
