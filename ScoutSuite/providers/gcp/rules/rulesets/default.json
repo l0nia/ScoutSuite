@@ -25,12 +25,6 @@
                 "level": "warning"
             }
         ],
-        /*"accesscontextmanager-service-perimeter-with-restricted-services.json": [
-            {
-                "enabled": true,
-                "level": "info"
-            }
-        ],*/
         "accesscontextmanager-service-perimeter-no-restricted-services.json": [
             {
                 "enabled": true,
