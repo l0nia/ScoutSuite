@@ -1,3 +1,4 @@
+from ScoutSuite.core.console import print_info
 from ScoutSuite.providers.gcp.facade.base import GCPFacade
 from ScoutSuite.providers.gcp.resources.base import GCPCompositeResources
 from ScoutSuite.providers.utils import get_non_provider_id
@@ -11,6 +12,8 @@ class RedisInstances(GCPCompositeResources):
 
     async def fetch_all(self):
         raw_instances = await self.facade.memorystoreredis.get_redis_instances(self.project_id)
+        print_info(
+            f'Fetched {len(raw_instances)} Redis instance(s) for project {self.project_id}')
         for raw_instance in raw_instances:
             instance_id, instance = self._parse_instance(raw_instance)
             self[instance_id] = instance
@@ -31,6 +34,9 @@ class RedisInstances(GCPCompositeResources):
         instance_dict['transit_encryption_mode'] = raw_instance['transitEncryptionMode']
         instance_dict['ssl_required'] = self._is_ssl_required(raw_instance)
         instance_dict['auth_enabled'] = self._is_auth_required(raw_instance)
+        print_info(
+            f"Redis instance {instance_dict['name'] or instance_dict['id']} auth_enabled="
+            f"{instance_dict['auth_enabled']} ssl_required={instance_dict['ssl_required']}")
 
         return instance_dict['id'], instance_dict
 
@@ -45,4 +51,3 @@ class RedisInstances(GCPCompositeResources):
     def _is_auth_required(self, raw_instance):
         is_auth_enabled = raw_instance.get('authEnabled', False)
         return is_auth_enabled
-
